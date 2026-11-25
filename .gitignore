@@ -1,0 +1,53 @@
+﻿# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Python virtual environments
+venv/
+.venv/
+venvinference/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python testing and cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# IDE and editor
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local datasets and imported data
+ChineseLearningDataset/
+
+# AI model checkpoints
+backend/ai_model/weights/*.pth
+
+# Frontend dependencies and build
+node_modules/
+dist/
+.vite/
+
+# Additional Python environments
+env/
+# Large AI feature files
+backend/ai_model/templates/*_features.pt
