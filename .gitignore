@@ -49,5 +49,6 @@ dist/
 
 # Additional Python environments
 env/
+
 # Large AI feature files
 backend/ai_model/templates/*_features.pt
