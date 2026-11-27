@@ -37,18 +37,13 @@ class Config:
         "pool_pre_ping": True,
     }
 
-    # Pisahkan origin frontend dengan koma di .env.
-    FRONTEND_ORIGINS = [
-        origin.strip()
-        for origin in os.getenv(
-            "FRONTEND_ORIGINS",
-            "http://localhost:3000,http://localhost:5173",
-        ).split(",")
-        if origin.strip()
-    ]
-
+    # Mengizinkan origin frontend dari localhost dan jaringan lokal (IP WiFi / LAN)
     CORS_RESOURCES = {
-        r"/api/*": {"origins": FRONTEND_ORIGINS},
+        r"/api/*": {
+            "origins": "*",
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"],
+        },
     }
 
     @staticmethod

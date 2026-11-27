@@ -396,10 +396,15 @@ export default function HandwritingPage() {
         setError(res.data?.message || 'Character could not be recognized.')
       }
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          'An error occurred while recognizing the handwriting image.'
-      )
+      if (!err.response) {
+        const host = (typeof window !== 'undefined' && window.location?.hostname) || 'localhost'
+        setError(`Cannot connect to backend server. Please make sure the Flask backend is running on http://${host}:5000.`)
+      } else {
+        setError(
+          err.response?.data?.message ||
+            'An error occurred while recognizing the handwriting image.'
+        )
+      }
     } finally {
       setLoading(false)
     }
@@ -1012,6 +1017,49 @@ export default function HandwritingPage() {
                     </div>
                   </div>
 
+                  {/* Stroke Sequence Breakdown - Distinct Scholar Indigo Ink Palette (Urutan Duluan) */}
+                  {result.stroke_sequence && (
+                    <div className="rounded-xl border border-[#234668]/25 bg-gradient-to-br from-[#F4F7FA] to-[#EBF0F6] p-3 mb-3.5 shadow-2xs">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold tracking-wider text-[#234668] uppercase">
+                          Stroke Breakdown ({result.stroke_sequence.length} strokes)
+                        </span>
+                        <span className="text-[10px] font-mono text-[#234668] bg-[#234668]/10 border border-[#234668]/20 px-2 py-0.5 rounded-md font-semibold">
+                          Seq: {result.stroke_sequence}
+                        </span>
+                      </div>
+
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {result.stroke_sequence.split('').map((token, index) => {
+                          const info = STROKE_DICTIONARY[token]
+                          return (
+                            <div
+                              key={index}
+                              className="flex items-center gap-1 rounded-md border border-[#234668]/20 bg-white/95 px-2 py-0.5 text-xs shadow-2xs"
+                              title={
+                                info
+                                  ? `Stroke ${index + 1}: ${info.name} (${info.desc})`
+                                  : `Stroke ${index + 1}: ${token}`
+                              }
+                            >
+                              <span className="text-[9px] font-mono text-[#234668]/70 font-bold">
+                                #{index + 1}
+                              </span>
+                              <span className="font-serif text-xs font-bold text-[#234668]">
+                                {info ? info.symbol : token}
+                              </span>
+                              {info && (
+                                <span className="text-[10px] text-charcoal/70">
+                                  {info.name}
+                                </span>
+                              )}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Daily Conversational Example Sentence - Warm Cinnabar Scholar Palette */}
                   {exampleSentence && (
                     <div className="rounded-xl border border-cinnabar/25 bg-gradient-to-br from-[#FFF8F6] to-[#FAF1EB] p-3 mb-3.5 text-left shadow-2xs">
@@ -1056,67 +1104,24 @@ export default function HandwritingPage() {
                     </div>
                   )}
 
-                  {/* Stroke Sequence Breakdown - Distinct Scholar Indigo Ink Palette */}
-                  {result.stroke_sequence && (
-                    <div className="rounded-xl border border-[#234668]/25 bg-gradient-to-br from-[#F4F7FA] to-[#EBF0F6] p-3 mb-3.5 shadow-2xs">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold tracking-wider text-[#234668] uppercase">
-                          Stroke Breakdown ({result.stroke_sequence.length} strokes)
-                        </span>
-                        <span className="text-[10px] font-mono text-[#234668] bg-[#234668]/10 border border-[#234668]/20 px-2 py-0.5 rounded-md font-semibold">
-                          Seq: {result.stroke_sequence}
-                        </span>
-                      </div>
-
-                      <div className="mt-2 flex flex-wrap gap-1.5">
-                        {result.stroke_sequence.split('').map((token, index) => {
-                          const info = STROKE_DICTIONARY[token]
-                          return (
-                            <div
-                              key={index}
-                              className="flex items-center gap-1 rounded-md border border-[#234668]/20 bg-white/95 px-2 py-0.5 text-xs shadow-2xs"
-                              title={
-                                info
-                                  ? `Stroke ${index + 1}: ${info.name} (${info.desc})`
-                                  : `Stroke ${index + 1}: ${token}`
-                              }
-                            >
-                              <span className="text-[9px] font-mono text-[#234668]/70 font-bold">
-                                #{index + 1}
-                              </span>
-                              <span className="font-serif text-xs font-bold text-[#234668]">
-                                {info ? info.symbol : token}
-                              </span>
-                              {info && (
-                                <span className="text-[10px] text-charcoal/70">
-                                  {info.name}
-                                </span>
-                              )}
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Definitions (CC-CEDICT) - Clean 2-column typographic list, no boxed buttons */}
-                  <div className="border-t border-[#E7DFD3] pt-3">
-                    <p className="text-[10px] font-bold tracking-wider text-charcoal/55 uppercase">
+                  {/* Definitions (CC-CEDICT) - Satu baris horizontal ke samping */}
+                  <div className="border-t border-[#E7DFD3] pt-2.5">
+                    <p className="text-[10px] font-bold tracking-wider text-charcoal/55 uppercase mb-1">
                       Definitions (CC-CEDICT)
                     </p>
                     {result.dictionary?.[0]?.meanings?.length ? (
-                      <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-charcoal/85">
+                      <div className="flex flex-wrap items-center gap-x-3.5 gap-y-1 text-xs text-charcoal/85">
                         {result.dictionary[0].meanings.slice(0, 4).map((meaning, i) => (
-                          <div key={i} className="flex items-baseline gap-1.5 min-w-0">
-                            <span className="size-1 shrink-0 rounded-full bg-cinnabar/75 translate-y-[-1px]" />
-                            <span className="leading-snug text-[11.5px] truncate" title={meaning}>
+                          <div key={i} className="inline-flex items-center gap-1.5 shrink-0">
+                            <span className="size-1.5 shrink-0 rounded-full bg-cinnabar/75" />
+                            <span className="text-[12px] text-charcoal/90">
                               {meaning}
                             </span>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="mt-1.5 italic text-[11px] text-charcoal/50">
+                      <p className="mt-1 italic text-[11px] text-charcoal/50">
                         No direct dictionary definition found.
                       </p>
                     )}
